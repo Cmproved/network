@@ -1,22 +1,34 @@
 CC=gcc
 
-NAME=libcstd<lib>.a
+NAME=libcstdnetwork.a
 
-SRC = src/
+SRC = src/create_server.c\
+	  src/default_client_connected.c\
+	  src/default_client_disconnected.c\
+	  src/default_receive.c\
+	  src/default_send.c\
+	  src/destroy_server.c\
+	  src/init_server.c\
+	  src/kick.c\
+	  src/setup_func.c\
+	  src/start_server.c\
 
 CFLAGS 	+= -O3 -Ofast -Wall
 
-CFLAGS_DEBUG += ${CFLAGS} -g2 -fanalyzer -Wextra -Wundef
+CFLAGS_DEBUG += -Wall -g2 -fanalyzer -Wextra -Wundef
 
-OBJ=${patsubst %c, %o, ${SRC}}
-OBJ_DEBUG=${patsubst %c, %o_debug, ${SRC}}
+OBJ_DIR=.obj
+OBJ=${patsubst %c, ${OBJ_DIR}/%o, ${SRC}}
+OBJ_DEBUG=${patsubst %c, ${OBJ_DIR}/%o_debug, ${SRC}}
 
 RM=rm -rf
 
-%.o: %.c
+${OBJ_DIR}/%.o: %.c
+	@mkdir -p ${@D}
 	${CC} ${CFLAGS} -c -o $@ $<
 
-%.o_debug: %.c
+${OBJ_DIR}/%.o_debug: %.c
+	@mkdir -p ${@D}
 	${CC} ${CFLAGS_DEBUG} -c -o $@ $<
 
 all: ${NAME}
@@ -28,7 +40,7 @@ debug: ${OBJ_DEBUG}
 	ar rc ${NAME} $^
 
 tests: debug
-	gcc ${CFLAGS_DEBUG} tests/main.c -L. -lcstdlist
+	gcc ${CFLAGS_DEBUG} tests/main.c -L. -lcstdnetwork
 
 clean:
 	${RM} ${OBJ} ${OBJ_DEBUG}
