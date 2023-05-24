@@ -1,5 +1,13 @@
+/*
+** EPITECH PROJECT, 2023
+** my_lib
+** File description:
+** network
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/select.h>
 #include <unistd.h>
 
 #ifndef _NETWORK_H_
@@ -10,23 +18,26 @@
     #include <arpa/inet.h>
     #include <limits.h>
     #include <stddef.h>
+    #include <signal.h>
+    #include "network_error.h"
+
 typedef struct server_s server_t;
 struct socket_s {
     int fd;
     struct sockaddr_in sock_in;
 };
 
-struct client_s {
+typedef struct client_s {
     struct socket_s socket;
     void *buffer;
     void *(*received)(struct server_s *serv, int id, size_t size);
-};
+}client_t;
 
 typedef struct server_s {
     int port;
     struct socket_s sock;
+    fd_set client_fds;
     struct client_s *client[10];//BUG: linked list maybe;
-    //TODO: ID or UUID;
     int is_running;
 
     int (*const setup)(struct server_s *);
@@ -34,17 +45,27 @@ typedef struct server_s {
     void (*const stop)(struct server_s *, int stat);
     void (*const kick)(struct server_s *serv, int id);
 
-    void (*const setup_send)(struct server_s *, void (*)(struct server_s *, int id, void *tosend, size_t size));
-    void (*const setup_receive)(struct server_s *, void *(*)(struct server_s *, int id, size_t size));
-    void (*const setup_receive_client)(struct server_s *, void *(*)(struct server_s *, int id, size_t size), int id);
-    void (*const setup_client_connected)(struct server_s *, void (*)(struct server_s *, int id));
-    void (*const setup_client_disconnected)(struct server_s *, void (*)(struct server_s *, int id));
+    void (*const setup_send)(struct server_s *, \
+            void (*)(struct server_s *, int id, void *tosend, size_t size));
+    void (*const setup_receive)(struct server_s *, \
+            void *(*)(struct server_s *, int id, size_t size));
+    void (*const setup_receive_client)(struct server_s *, \
+            void *(*)(struct server_s *, int id, size_t size), int id);
+    void (*const setup_client_connected)(struct server_s *, \
+            void (*)(struct server_s *, int id));
+    void (*const setup_client_disconnected)(struct server_s *, \
+            void (*)(struct server_s *, int id));
 
     void (*send)(struct server_s *serv, int id, void *tosend, size_t size);
     void *(*receive)(struct server_s *serv, int id, size_t size);
     void (*client_connected)(struct server_s *serv, int id);
     void (*client_disconnected)(struct server_s *serv, int id);
 } server_t;
+
+/*
+ Backup the pointer of the server for destroy
+*/
+server_t *server_backup(server_t *serv);
 
 /*
  create a server object that will listen on port given as parametter
@@ -59,17 +80,20 @@ int init_server(server_t *serv);
 /*
  setup the sender function
 */
-void setup_send(server_t *serv, void (*)(server_t *serv, int id, void *tosend, size_t size));
+void setup_send(server_t *serv, void (*)(server_t *serv, int id, \
+            void *tosend, size_t size));
 
 /*
  setup the receiver function
 */
-void setup_receive(server_t *serv, void *(*)(server_t *serv, int id, size_t size));
+void setup_receive(server_t *serv, void *(*)(server_t *serv, int id, \
+            size_t size));
 
 /*
  setup the receive function for the client
 */
-void setup_receive_client(server_t *, void *(*)(server_t *serv, int id, size_t size), int id);
+void setup_receive_client(server_t *, void *(*)(server_t *serv, int id, \
+            size_t size), int id);
 
 /*
  setup what to do when client connected
@@ -79,12 +103,23 @@ void setup_client_connected(server_t *serv, void (*)(server_t *serv, int id));
 /*
  setup what to do when client connected
 */
-void setup_client_disconnected(server_t *serv, void (*)(server_t *serv, int id));
+void setup_client_disconnected(server_t *serv, void (*)(server_t *serv, \
+            int id));
 
 /*
  start the server logic as itself and loop into select
 */
 int start_server(server_t *serv);
+
+/*
+ accept for the client
+*/
+int server_accept(server_t *serv);
+
+/*
+ Loop for all client in order to know what to do
+*/
+int client_actions(server_t *serv);
 
 /*
  default send a buffer of data to a client
@@ -119,5 +154,5 @@ void stop_server(server_t *serv, int status);
 /*
  destroy the server and try to free every elements left inside
 */
-void destroy_server(server_t *server);
+void destroy_server(void);
 #endif // !_NETWORK_H_

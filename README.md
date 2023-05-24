@@ -56,6 +56,7 @@ Here are the methods of the object :
 |------|-------------|------------|-------------|
 | `create_server` | `server_t *` | `int port` | `create a server_t object that is ready to listent on the port given` |
 | `destroy_server` | `void` | `void` | `set the server_t in a state to be destroy and clear so clear all memory allocated`| 
+| `backup_server` | `server_t * \|\| NULL` | `server_t *` | `if a `server_t *` is given as parameter, the function store in a static way the pointer, if the parameter is `NULL`, the function return the `server_t *` stored`|
 
 ## Contributing
 Contributions are greatly apreciated. Do not hesitate to pull request, or open issues !

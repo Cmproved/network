@@ -7,8 +7,8 @@ int main(int argc, char *argv[])
         return (2);
     if (serv->setup(serv))
         return (3);
-    if (serv->start(serv) == 0)
+    if (serv->start(serv) != 0)
         printf("fatal error\n");
-    destroy_server(serv);
+    destroy_server();
     return EXIT_SUCCESS;
 }

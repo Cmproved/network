@@ -2,7 +2,10 @@ CC=gcc
 
 NAME=libcstdnetwork.a
 
-SRC = src/create_server.c\
+SRC = src/accept_server.c\
+	  src/backup_server.c\
+	  src/client_actions.c\
+	  src/create_server.c\
 	  src/default_client_connected.c\
 	  src/default_client_disconnected.c\
 	  src/default_receive.c\

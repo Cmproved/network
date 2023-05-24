@@ -1,8 +1,33 @@
+/*
+** EPITECH PROJECT, 2023
+** my_lib
+** File description:
+** create_server
+*/
+
 #include "../include/network.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/select.h>
 #include <unistd.h>
+
+static const server_t server_template = {
+    .is_running = 0,
+    .sock = {-2,{0}},
+    .setup = init_server,
+    .start = start_server,
+    .stop = stop_server,
+    .setup_send = setup_send,
+    .setup_receive = setup_receive,
+    .setup_receive_client = setup_receive_client,
+    .setup_client_connected = setup_client_connected,
+    .setup_client_disconnected = setup_client_disconnected,
+    .send = default_send,
+    .receive = default_receive,
+    .kick = kick_it,
+    .client_connected = default_client_connected,
+    .client_disconnected = default_client_disconnected
+};
 
 static void init_socket(struct socket_s *sock)
 {
@@ -17,28 +42,14 @@ static void init_socket(struct socket_s *sock)
         sock->fd = -1;
     }
 }
-static const server_t server_template = {
-    .is_running = 0,
-    .sock = {0},
-    .setup = init_server,
-    .start = start_server,
-    .stop = stop_server,
-    .setup_send = setup_send,
-    .setup_receive = setup_receive,
-    .setup_receive_client = setup_receive_client,
-    .setup_client_connected = setup_client_connected,
-    .setup_client_disconnected = setup_client_disconnected,
-    .send = default_send,
-    .receive = default_receive,
-    .kick = kick_it,
-    .client_connected = default_client_connected,
-    .client_disconnected = default_client_disconnected,
-};
 
 static void template_server(server_t *server)
 {
-    memcpy(server, (void *)&server_template, sizeof(server_t));
-    dprintf(2, "[+]Server: initialized function.\n[+]Server: DONE\n");
+    dprintf(2, "[+]Server: initialized function.\n");
+    memcpy(server, (const void *)&server_template, sizeof(server_t));
+    FD_ZERO(&server->client_fds);
+    FD_SET(server->sock.fd, &server->client_fds);
+    dprintf(2, "[+]Server: DONE\n");
 }
 
 server_t *create_server(int port)
@@ -54,8 +65,7 @@ server_t *create_server(int port)
         free(server);
         return (NULL);
     }
-    dprintf(2, "[+]Server:  socket setup DONE\n");
+    dprintf(2, "[+]Server: socket setup DONE\n");
     server->port = port;
-    dprintf(2, "[+]Server: listen on 0.0.0.0 :%d\n", port);
     return server;
 }

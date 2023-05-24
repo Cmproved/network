@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2023
+** my_lib
+** File description:
+** setup_func
+*/
+
 #include "../include/network.h"
 
 void setup_send(server_t *serv, void (*func)(server_t *, int, void *, size_t))
@@ -10,7 +17,8 @@ void setup_receive(server_t *serv, void *(*func)(server_t *, int, size_t))
     serv->receive = func;
 }
 
-void setup_receive_client(server_t *serv, void* (*func)(server_t *serv, int id, size_t size), int id)
+void setup_receive_client(server_t *serv, void* (*func)(server_t *serv, \
+            int id, size_t size), int id)
 {
     serv->client[id]->received = func;
 }
