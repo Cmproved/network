@@ -7,10 +7,11 @@
 
 #include "../include/network.h"
 
-
 static void reset_fds(server_t *serv)
 {
-    printf("I dont reset fds now It's WIP\n");
+    FD_ZERO(&serv->client_fds);
+    FD_SET(serv->sock.fd, &serv->client_fds);
+    printf("I reset only server fd\n");
 }//TODO: Is my client a linked list or an array
 
 
@@ -23,19 +24,21 @@ static void handle(int sig)
     server_backup(serv);
 }
 
-int loop_server(server_t *serv)
+static void loop_server(server_t *serv)
 {
-    int status = 1;
     reset_fds(serv);
-    if (select(FD_SETSIZE, &serv->client_fds, NULL, NULL, NULL) <= 0) { //TODO: Add TO
-        perror("Select failed");
+    if (select(FD_SETSIZE, &serv->client_fds, NULL, NULL, NULL) <= 0 && serv->is_running == 1) {
+        //INFO: Add TimeOut ?
+        perror("select");
         serv->stop(serv, SELECT_FAILED);
+        return;
     }
     if (FD_ISSET(serv->sock.fd, &serv->client_fds))
-        if (server_accept(serv) == -1)
+        if (server_accept(serv) == -1) {
             serv->stop(serv, MALLOC_FAILED);
-    status = client_actions(serv);
-    return status;
+            return;
+        }
+    client_actions(serv);
 }
 
 int start_server(server_t *serv)

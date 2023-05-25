@@ -119,7 +119,7 @@ int server_accept(server_t *serv);
 /*
  Loop for all client in order to know what to do
 */
-int client_actions(server_t *serv);
+void client_actions(server_t *serv);
 
 /*
  default send a buffer of data to a client

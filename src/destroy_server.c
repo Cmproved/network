@@ -14,7 +14,7 @@ void stop_server(server_t *serv, int status)
         return;
     }
     serv->is_running = status;
-    if (status == 0)
+    if (status == 0 || status == CTRLC)
         dprintf(2, "[+]Server: kill or gracefully shutdown\n");
     else
         dprintf(2, "[+]Server: error %d occure\n", status);

@@ -47,8 +47,6 @@ static void template_server(server_t *server)
 {
     dprintf(2, "[+]Server: initialized function.\n");
     memcpy(server, (const void *)&server_template, sizeof(server_t));
-    FD_ZERO(&server->client_fds);
-    FD_SET(server->sock.fd, &server->client_fds);
     dprintf(2, "[+]Server: DONE\n");
 }
 

@@ -16,14 +16,16 @@ int init_server(server_t *this)
     if (bind(this->sock.fd, (struct sockaddr*)&this->sock.sock_in, \
                 (socklen_t)sizeof(this->sock.sock_in)) == -1) {
         close(this->sock.fd);
-        perror("Erreur lors de la liaison du socket");
+        perror("bind");
         return (1);
     }
     if (listen(this->sock.fd, SOMAXCONN) == -1) {
         close(this->sock.fd);
-        perror("Erreur lors de l'écoute du socket");
+        perror("listen");
         return (1);
     }
     dprintf(2, "[+]Server: listen on 0.0.0.0 :%d\n", this->port);
+    FD_ZERO(&this->client_fds);
+    FD_SET(this->sock.fd, &this->client_fds);
     return (0);
 }
