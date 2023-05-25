@@ -19,7 +19,8 @@
     #include <limits.h>
     #include <stddef.h>
     #include <signal.h>
-    #include "network_error.h"
+    #include <uuid/uuid.h>
+    #include "network_define.h"
 
 typedef struct server_s server_t;
 struct socket_s {
@@ -29,6 +30,7 @@ struct socket_s {
 
 typedef struct client_s {
     struct socket_s socket;
+    char id[UUID_STR_LEN];
     void *buffer;
     void *(*received)(struct server_s *serv, int id, size_t size);
 }client_t;
@@ -36,8 +38,9 @@ typedef struct client_s {
 typedef struct server_s {
     int port;
     struct socket_s sock;
-    fd_set client_fds;
-    struct client_s *client[10];//BUG: linked list maybe;
+    fd_set read_fds;
+    fd_set write_fds;
+    struct client_s **clients;
     int is_running;
 
     int (*const setup)(struct server_s *);
@@ -120,6 +123,11 @@ int server_accept(server_t *serv);
  Loop for all client in order to know what to do
 */
 void client_actions(server_t *serv);
+
+/*
+ client array size
+*/
+size_t client_tab_arr(void *arr);
 
 /*
  default send a buffer of data to a client

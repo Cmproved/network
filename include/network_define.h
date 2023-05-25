@@ -9,4 +9,4 @@
 #define SELECT_FAILED 2
 #define CTRLC 3
 #define MALLOC_FAILED 4
-
+#define READ_SIZE 1024

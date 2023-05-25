@@ -10,5 +10,5 @@
 void default_client_connected(server_t *serv, int id)
 {
     serv = serv;
-    printf("Client %d connected", id);
+    printf("Salam mon khey [%d] is connected\n", id);
 }

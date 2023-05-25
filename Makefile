@@ -3,22 +3,24 @@ CC=gcc
 NAME=libcstdnetwork.a
 
 SRC = src/accept_server.c\
-	  src/backup_server.c\
-	  src/client_actions.c\
-	  src/create_server.c\
-	  src/default_client_connected.c\
-	  src/default_client_disconnected.c\
-	  src/default_receive.c\
-	  src/default_send.c\
-	  src/destroy_server.c\
-	  src/init_server.c\
-	  src/kick.c\
-	  src/setup_func.c\
-	  src/start_server.c\
+	 src/backup_server.c\
+	 src/client_actions.c\
+	 src/client_del.c\
+	 src/client_size.c\
+	 src/create_server.c\
+	 src/default_client_connected.c\
+	 src/default_client_disconnected.c\
+	 src/default_receive.c\
+	 src/default_send.c\
+	 src/destroy_server.c\
+	 src/init_server.c\
+	 src/kick.c\
+	 src/setup_func.c\
+	 src/start_server.c\
 
 CFLAGS 	+= -O3 -Ofast -Wall
 
-CFLAGS_DEBUG += -Wall -g2 -fanalyzer -Wextra -Wundef
+CFLAGS_DEBUG += -Wall -g2 -Wextra -Wundef
 
 OBJ_DIR=.obj
 OBJ=${patsubst %c, ${OBJ_DIR}/%o, ${SRC}}
@@ -43,7 +45,7 @@ debug: ${OBJ_DEBUG}
 	ar rc ${NAME} $^
 
 tests: debug
-	gcc ${CFLAGS_DEBUG} tests/main.c -L. -lcstdnetwork
+	gcc ${CFLAGS_DEBUG} tests/main.c -L. -lcstdnetwork -luuid
 
 clean:
 	${RM} ${OBJ} ${OBJ_DEBUG}

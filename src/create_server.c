@@ -14,6 +14,7 @@
 static const server_t server_template = {
     .is_running = 0,
     .sock = {-2,{0}},
+    .clients = NULL,
     .setup = init_server,
     .start = start_server,
     .stop = stop_server,
@@ -50,6 +51,18 @@ static void template_server(server_t *server)
     dprintf(2, "[+]Server: DONE\n");
 }
 
+static void init_client(server_t *serv)
+{
+    serv->clients = malloc(sizeof(client_t *) * (FD_SETSIZE + 1));
+    if (!serv->clients) {
+        close(serv->sock.fd);
+        free(serv);
+        serv = NULL;
+        return;
+    }
+    memset(serv->clients, 0, sizeof(client_t *) * (FD_SETSIZE + 1));
+}
+
 server_t *create_server(int port)
 {
     server_t* server = malloc(sizeof(server_t));
@@ -65,5 +78,6 @@ server_t *create_server(int port)
     }
     dprintf(2, "[+]Server: socket setup DONE\n");
     server->port = port;
+    init_client(server);
     return server;
 }

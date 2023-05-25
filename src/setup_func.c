@@ -20,7 +20,7 @@ void setup_receive(server_t *serv, void *(*func)(server_t *, int, size_t))
 void setup_receive_client(server_t *serv, void* (*func)(server_t *serv, \
             int id, size_t size), int id)
 {
-    serv->client[id]->received = func;
+    serv->clients[id]->received = func;
 }
 
 void setup_client_connected(server_t *serv, void (*func)(server_t *, int))

@@ -24,6 +24,11 @@ void destroy_server(void)
 {
     server_t *server = server_backup(NULL);
     close(server->sock.fd);
+    for (size_t i = 0; server->clients[i] != NULL; i++) {
+        // client_del(server->clients[i]);
+        free(server->clients[i]);
+    }
+    free(server->clients);
     free(server);
     dprintf(2, "[+]Server: Destroyed\n");
 }

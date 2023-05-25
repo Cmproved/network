@@ -25,7 +25,5 @@ int init_server(server_t *this)
         return (1);
     }
     dprintf(2, "[+]Server: listen on 0.0.0.0 :%d\n", this->port);
-    FD_ZERO(&this->client_fds);
-    FD_SET(this->sock.fd, &this->client_fds);
     return (0);
 }
