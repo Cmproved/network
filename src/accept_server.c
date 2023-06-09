@@ -26,21 +26,21 @@ static client_t *create_client(int server_fd, size_t id)
     client->a_buf = NULL;
     client->id = id;
     client->to_del = 0;
-    return client;
+    return (client);
 }
 
 static size_t get_client_id(server_t *serv)
 {
     size_t id = 1;
     if (!serv->clients[0])
-        return 1;
+        return (1);
     for (int i = 0; serv->clients[i]; i++) {
         if (serv->clients[i]->id == id) {
             id++;
             i = -1;
         }
     }
-    return id;
+    return (id);
 }
 
 int server_accept(server_t *serv)

@@ -16,7 +16,7 @@ static int reset_fds(server_t *serv)
         if (fd < tmp)
             fd = tmp;
     }
-    return fd;
+    return (fd);
 }
 
 static void handle(int sig)

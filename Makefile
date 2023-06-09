@@ -20,6 +20,7 @@ SRC_DEFAULT = src/default/default_client_connected.c\
 	 src/default/default_receive.c\
 	 src/default/default_send.c\
 
+SRC_TEST = tests/unit_test.c
 
 CFLAGS 	+= -O3 -Ofast -Wall
 
@@ -30,6 +31,9 @@ OBJ = ${patsubst %c, ${OBJ_DIR}/%o, ${SRC}}
 OBJ += ${patsubst %c, ${OBJ_DIR}/%o, ${SRC_DEFAULT}}
 OBJ_DEBUG = ${patsubst %c, ${OBJ_DIR}/%o_debug, ${SRC}}
 OBJ_DEBUG += ${patsubst %c, ${OBJ_DIR}/%o_debug, ${SRC_DEFAULT}}
+OBJ_TEST = ${patsubst %c, ${OBJ_DIR}/%o, ${SRC_TEST}}
+
+TEST_FLAG = -lcriterion -L. -lcstdnetwork
 
 RM=rm -rf
 
@@ -49,8 +53,11 @@ ${NAME}: ${OBJ}
 debug: ${OBJ_DEBUG}
 	ar rc ${NAME} $^
 
-tests: debug
-	gcc ${CFLAGS_DEBUG} tests/main.c -L. -lcstdnetwork
+tests: debug unit_test
+	gcc ${CFLAGS_DEBUG} tests/main.c -L. -lcstdnetwork -o default_server
+
+unit_test: ${OBJ_TEST}
+	gcc ${CFLAGS_DEBUG} ${OBJ_TEST} ${TEST_FLAG} -o unit_test
 
 clean:
 	${RM} ${OBJ} ${OBJ_DEBUG}
@@ -60,4 +67,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all ${NAME} debug tests clean re fclean
+.PHONY: all ${NAME} debug tests clean re fclean unit_test
