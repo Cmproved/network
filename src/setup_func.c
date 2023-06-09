@@ -1,34 +1,35 @@
-/*
-** EPITECH PROJECT, 2023
-** my_lib
-** File description:
-** setup_func
-*/
-
 #include "../include/network.h"
 
-void setup_send(server_t *serv, void (*func)(server_t *, int, void *, size_t))
+void setup_send(server_t *serv, void (*func)(server_t *serv, size_t id,\
+void *data))
 {
     serv->send = func;
 }
 
-void setup_receive(server_t *serv, void *(*func)(server_t *, int, size_t))
+void setup_receive(\
+server_t *serv, int (*func)(server_t *serv, size_t id, const void *buff,\
+size_t size))
 {
     serv->receive = func;
 }
 
-void setup_receive_client(server_t *serv, void* (*func)(server_t *serv, \
-            int id, size_t size), int id)
+void setup_receive_client(\
+server_t *serv, int (*func)(server_t *serv, size_t id,\
+const void *buff, size_t size), size_t id)
 {
-    serv->clients[id]->received = func;
+    for (int i = 0; serv->clients[i]; i++)
+        if (serv->clients[i]->id == id)
+            serv->clients[i]->received = func;
 }
 
-void setup_client_connected(server_t *serv, void (*func)(server_t *, int))
+void setup_client_connected(\
+server_t *serv, void (*func)(server_t *serv, size_t id))
 {
     serv->client_connected = func;
 }
 
-void setup_client_disconnected(server_t *serv, void (*func)(server_t *, int))
+void setup_client_disconnected(\
+server_t *serv, void (*func)(server_t *serv, size_t id))
 {
     serv->client_disconnected = func;
 }

@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2023
-** my_lib
-** File description:
-** init_server
-*/
-
 #include "../include/network.h"
 
 int init_server(server_t *this)

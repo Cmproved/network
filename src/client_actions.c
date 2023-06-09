@@ -1,39 +1,46 @@
-/*
-** EPITECH PROJECT, 2023
-** cstd_network
-** File description:
-** client_actions
-*/
-
 #include "../include/network.h"
 
-static int read_client(server_t *serv, int cli_fd)
+static void read_client(server_t *serv, client_t *client)
 {
-    for (size_t i = 0; serv->clients[i]; i++)
-        if (serv->clients[i] != NULL && serv->clients[i]->socket.fd == cli_fd)
-            printf("Client [%d] is in a Read state\n", cli_fd);
-    return (0);
+    //TODO:
+    //Read -> buff;
+    //serv->receive(serv, id_cli_sender, buff, size_buf)
+    //si erreur fd -> -1;
+    void *buff = alloca(READ_SIZE);
+    memset(buff, 0, READ_SIZE);
+    int readed = 0;
+    readed = read(client->socket.fd, buff, READ_SIZE);
+    if (readed <= 0)
+        client->to_del = 1;
+    if (strlen(buff) != 0)
+        printf("%s", (char *)buff);
+    return;
 }
 
-static int write_client(server_t *serv, int cli_fd)
+static void write_client(server_t *serv, client_t *client)
 {
-    for (size_t i = 0; serv->clients[i]; i++)
-        if (serv->clients[i] != NULL && serv->clients[i]->socket.fd == cli_fd)
-            printf("Client [%d] is in a Write state\n", cli_fd);
-    return (0);
+    //TODO:
+    //write the a_buff, on client_id of size_t buf
+    //move data if needed
+    int writed = write(client->socket.fd, client->a_buf, client->a_size);
+    if (writed < 0)
+        client->to_del = 1;
+    return;
+}
+
+static void actions(server_t *serv, int i)
+{
+    if (FD_ISSET(serv->clients[i]->socket.fd, &serv->r_fds))
+        read_client(serv, serv->clients[i]);
+    if (FD_ISSET(serv->clients[i]->socket.fd, &serv->w_fds))
+        write_client(serv, serv->clients[i]);
+    return;
 }
 
 void client_actions(server_t *serv)
 {
-    for (int fd = 0; fd < FD_SETSIZE; fd++) {
-        if (FD_ISSET(fd, &serv->read_fds))
-            read_client(serv, fd);
-            // printf("Read event of client %d\n", fd);
-            // serv->receive(serv, fd, READ_SIZE);
-        if (FD_ISSET(fd, &serv->write_fds))
-            write_client(serv, fd);
-            // printf("write event from client %d\n", fd);
-            // serv->send(serv, fd, serv);
-    }
+    for (int i = 0; serv->clients[i]; i++)
+        actions(serv, i);
+
     return;
 }

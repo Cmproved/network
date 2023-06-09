@@ -1,17 +1,11 @@
-/*
-** EPITECH PROJECT, 2023
-** cstd_network
-** File description:
-** client_del
-*/
-
 #include "../include/network.h"
 
 static void free_client(client_t *cli)
 {
     close(cli->socket.fd);
-    free(cli->buffer);
-    free(cli);
+    if (!cli->a_buf)
+        return;
+    free(cli->a_buf);
 }
 
 void client_del(client_t *client)
@@ -32,4 +26,13 @@ void client_del(client_t *client)
         serv->clients[i] = serv->clients[i + 1];
         serv->clients[i + 1] = NULL;
     }
+}
+
+void clear_client(server_t *serv)
+{
+    for (int i = 0; serv->clients[i]; i++)
+        if (serv->clients[i]->to_del) {
+            serv->client_disconnected(serv, serv->clients[i]->id);
+            client_del(serv->clients[i]);
+        }
 }

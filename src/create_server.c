@@ -1,15 +1,4 @@
-/*
-** EPITECH PROJECT, 2023
-** my_lib
-** File description:
-** create_server
-*/
-
 #include "../include/network.h"
-#include <stdio.h>
-#include <string.h>
-#include <sys/select.h>
-#include <unistd.h>
 
 static const server_t server_template = {
     .is_running = 0,

@@ -1,23 +1,19 @@
-/*
-** EPITECH PROJECT, 2023
-** my_lib
-** File description:
-** destroy_server
-*/
-
 #include "../include/network.h"
 
 void stop_server(server_t *serv, int status)
 {
-    if (serv->is_running != 1) {
+    printf("bite %d\n", serv->is_running);
+    if (serv->is_running != 1 && serv->is_running != CTRLC) {
         dprintf(2, "[+]Server: forbidden double kill !\n");
         return;
     }
-    serv->is_running = status;
     if (status == 0 || status == CTRLC)
         dprintf(2, "[+]Server: kill or gracefully shutdown\n");
+    else if (status == SELECT_FAILED && serv->is_running == CTRLC)
+        return;
     else
         dprintf(2, "[+]Server: error %d occure\n", status);
+    serv->is_running = status;
 }
 
 void destroy_server(void)

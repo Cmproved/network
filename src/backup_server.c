@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2023
-** cstd_network
-** File description:
-** backup_server
-*/
-
 #include "../include/network.h"
 
 server_t *server_backup(server_t *serv)
