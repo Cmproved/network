@@ -63,7 +63,7 @@ clean:
 	${RM} ${OBJ} ${OBJ_DEBUG}
 
 fclean: clean
-	${RM} ${NAME} a.out
+	${RM} ${NAME} a.out unit_test default_server
 
 re: fclean all
 
