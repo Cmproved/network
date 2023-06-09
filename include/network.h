@@ -142,6 +142,9 @@ size_t client_tab_arr(void *arr);
    */
 void client_del(client_t *cli);
 
+/*
+   clear all deleted client from client array
+   */
 void clear_client(server_t *serv);
 
 /*

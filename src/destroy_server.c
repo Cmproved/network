@@ -2,7 +2,6 @@
 
 void stop_server(server_t *serv, int status)
 {
-    printf("bite %d\n", serv->is_running);
     if (serv->is_running != 1 && serv->is_running != CTRLC) {
         dprintf(2, "[+]Server: forbidden double kill !\n");
         return;
