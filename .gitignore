@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
-
+unit_test
+default_server
 # Object files
 *.o
 *.o_debug
