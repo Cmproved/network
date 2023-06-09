@@ -54,6 +54,8 @@ static void init_client(server_t *serv)
 
 server_t *create_server(int port)
 {
+    if (port < 0)
+        return (NULL);
     server_t* server = malloc(sizeof(server_t));
 
     if (!server)
@@ -68,5 +70,5 @@ server_t *create_server(int port)
     dprintf(2, "[+]Server: socket setup DONE\n");
     server->port = port;
     init_client(server);
-    return server;
+    return (server);
 }
