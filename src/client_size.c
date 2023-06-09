@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2023
-** cstd_network
-** File description:
-** client_size
-*/
-
 #include "../include/network.h"
 
 size_t client_tab_arr(void *arr)
