@@ -1,4 +1,5 @@
 #include "../include/network.h"
+#include <stdio.h>
 
 static int accept_client(client_t *client, int server_fd)
 {
@@ -16,7 +17,6 @@ static int accept_client(client_t *client, int server_fd)
 static client_t *create_client(int server_fd, size_t id)
 {
     client_t *client = malloc(sizeof(struct client_s));
-    printf("New client %p\n", client);
     if (!client)
         return (NULL);
     if (accept_client(client, server_fd)) {

@@ -30,9 +30,15 @@ static void handle(int sig)
 static void loop_server(server_t *serv)
 {
     int max_fd = reset_fds(serv);
-    if (select(max_fd + 1, &serv->r_fds, &serv->w_fds, NULL, NULL) <= 0) {
+    int select_ret = select(max_fd + 1, &serv->r_fds, &serv->w_fds, \
+    NULL, &serv->tv);
+    if (select_ret < 0) {
         perror("select");
         serv->stop(serv, SELECT_FAILED);
+        return;
+    }
+    if (select_ret == 0) {
+        serv->timeout(serv);
         return;
     }
     if (FD_ISSET(serv->sock.fd, &serv->r_fds))

@@ -40,8 +40,9 @@ typedef struct server_s {
     fd_set w_fds;
     struct client_s **clients;
     int is_running;
+    struct timeval tv;
 
-    int (*const setup)(struct server_s *serv);
+    int (*const init)(struct server_s *serv);
     int (*const start)(struct server_s *serv);
     void (*const stop)(struct server_s *serv, int stat);
     void (*const kick)(struct server_s *serv, size_t id);
@@ -58,12 +59,16 @@ typedef struct server_s {
             void (*)(struct server_s *serv, size_t id));
     void (*const setup_client_disconnected)(struct server_s *, \
             void (*)(struct server_s *, size_t id));
+    void (*const setup_timeout)(server_t *serv, time_t sec, suseconds_t  usec);
+    void (*const setup_timeout_func)(struct server_s *,\
+            void (*)(struct server_s *serv));
 
     void (*send)(struct server_s *serv, size_t id, void *data);
     int (*receive)(struct server_s *serv, size_t id,\
             const void *buff, size_t size);
     void (*client_connected)(struct server_s *serv, size_t id);
     void (*client_disconnected)(struct server_s *serv, size_t id);
+    void (*timeout)(struct server_s *serv);
 } server_t;
 
 /*
@@ -111,6 +116,17 @@ void setup_client_connected(server_t *serv, \
    */
 void setup_client_disconnected(server_t *serv, \
     void (*)(server_t *serv, size_t id));
+
+/*
+    setup timeout of select and so manage time
+    */
+void setup_timeout(server_t *serv, time_t sec, suseconds_t  usec);
+
+/*
+    setup function call when timeout happend
+    */
+void setup_timeout_func(server_t *serv, void (*func)(server_t *serv));
+
 
 /*
    start the server logic as itself and loop into select
@@ -172,6 +188,11 @@ void default_client_connected(server_t *serv, size_t id);
    default client disconncted
    */
 void default_client_disconnected(server_t *serv, size_t id);
+
+/*
+   default timeout function
+   */
+void default_timeout(server_t *serv);
 
 /*
    stop the server clear connection and lead the server to able to destroy state

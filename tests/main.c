@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
     int ret = 0;
     if (!serv)
         return (2);
-    if (serv->setup(serv))
+    if (serv->init(serv))
         return (3);
     ret = serv->start(serv);
     if (ret != 0 && ret != CTRLC)

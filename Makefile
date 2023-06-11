@@ -12,6 +12,7 @@ SRC = src/accept_server.c\
 	 src/init_server.c\
 	 src/kick.c\
 	 src/setup_func.c\
+	 src/setup_func_2.c\
 	 src/search_client.c\
 	 src/start_server.c\
 
@@ -19,6 +20,7 @@ SRC_DEFAULT = src/default/default_client_connected.c\
 	 src/default/default_client_disconnected.c\
 	 src/default/default_receive.c\
 	 src/default/default_send.c\
+	 src/default/default_timeout.c\
 
 SRC_TEST = tests/unit_test.c
 
