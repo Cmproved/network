@@ -4,7 +4,7 @@ static const server_t server_template = {
     .is_running = 0,
     .sock = {-2,{0}},
     .clients = NULL,
-    .tv = {1, 0},
+    .tv = {0, 0},
     .init = init_server,
     .start = start_server,
     .stop = stop_server,
@@ -13,14 +13,15 @@ static const server_t server_template = {
     .setup_receive_client = setup_receive_client,
     .setup_client_connected = setup_client_connected,
     .setup_client_disconnected = setup_client_disconnected,
-    .setup_timeout_func = setup_timeout_func,
     .setup_timeout = setup_timeout,
+    .setup_timeout_func = setup_timeout_func,
+    .setup_context = setup_context,
     .send = default_send,
     .receive = default_receive,
     .kick = kick_it,
     .timeout = default_timeout,
     .client_connected = default_client_connected,
-    .client_disconnected = default_client_disconnected
+    .client_disconnected = default_client_disconnected,
 };
 
 static void init_socket(struct socket_s *sock)

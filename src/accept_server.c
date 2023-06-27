@@ -1,5 +1,4 @@
 #include "../include/network.h"
-#include <stdio.h>
 
 static int accept_client(client_t *client, int server_fd)
 {
@@ -26,6 +25,7 @@ static client_t *create_client(int server_fd, size_t id)
     client->a_buf = NULL;
     client->id = id;
     client->to_del = 0;
+    client->received = NULL;
     return (client);
 }
 

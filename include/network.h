@@ -1,3 +1,4 @@
+#include <bits/types/struct_timeval.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/select.h>
@@ -30,7 +31,7 @@ typedef struct client_s {
     void *a_buf;
     size_t a_size;
     int (*received)(struct server_s *serv, size_t id, const \
-            void *buff, size_t size);
+            void *buff, size_t size, void *context);
 } client_t;
 
 typedef struct server_s {
@@ -41,6 +42,7 @@ typedef struct server_s {
     struct client_s **clients;
     int is_running;
     struct timeval tv;
+    void *context;
 
     int (*const init)(struct server_s *serv);
     int (*const start)(struct server_s *serv);
@@ -48,27 +50,29 @@ typedef struct server_s {
     void (*const kick)(struct server_s *serv, size_t id);
 
     void (*const setup_send)(struct server_s *serv, \
-            void (*)(struct server_s *serv, size_t id, void *data));
+            void (*)(struct server_s *serv, size_t id, void *data, \
+            size_t size));
     void (*const setup_receive)(struct server_s *, \
             int (*)(struct server_s *serv, size_t id, \
-                const void *buff, size_t size));
+                const void *buff, size_t size, void *context));
     void (*const setup_receive_client)(struct server_s *, \
             int (*)(struct server_s *serv, size_t id, \
-                const void *buff, size_t size), size_t id);
+                const void *buff, size_t size, void *context), size_t id);
     void (*const setup_client_connected)(struct server_s *, \
             void (*)(struct server_s *serv, size_t id));
     void (*const setup_client_disconnected)(struct server_s *, \
             void (*)(struct server_s *, size_t id));
-    void (*const setup_timeout)(server_t *serv, time_t sec, suseconds_t  usec);
-    void (*const setup_timeout_func)(struct server_s *,\
-            void (*)(struct server_s *serv));
+    void (*const setup_timeout)(server_t *serv, time_t sec, suseconds_t usec);
+    void (*const setup_timeout_func)(server_t *serv, \
+            void (*)(struct server_s *serv, void *context));
+    void (*const setup_context)(server_t *serv, void *context);
 
-    void (*send)(struct server_s *serv, size_t id, void *data);
+    void (*send)(struct server_s *serv, size_t id, void *data, size_t size);
     int (*receive)(struct server_s *serv, size_t id,\
-            const void *buff, size_t size);
+            const void *buff, size_t size, void *context);
     void (*client_connected)(struct server_s *serv, size_t id);
     void (*client_disconnected)(struct server_s *serv, size_t id);
-    void (*timeout)(struct server_s *serv);
+    void (*timeout)(struct server_s *serv, void *context);
 } server_t;
 
 /*
@@ -90,20 +94,21 @@ int init_server(server_t *serv);
    setup the sender function
    */
 void setup_send(server_t *serv, \
-    void (*)(server_t *serv, size_t id, void *data));
+    void (*)(server_t *serv, size_t id, void *data, size_t size));
 
 /*
    setup the receiver function
    */
 void setup_receive(server_t *serv, \
-    int (*)(server_t *serv, size_t id, const void *buff, size_t size));
+    int (*)(server_t *serv, size_t id, const void *buff, size_t size, \
+    void *context));
 
 /*
    setup the receive function for the client
    */
 void setup_receive_client(server_t *, \
     int (*)(server_t *serv, size_t id, const void *buff,\
-    size_t size), size_t id);
+    size_t size, void *context), size_t id);
 
 /*
    setup what to do when client connected
@@ -125,8 +130,13 @@ void setup_timeout(server_t *serv, time_t sec, suseconds_t  usec);
 /*
     setup function call when timeout happend
     */
-void setup_timeout_func(server_t *serv, void (*func)(server_t *serv));
+void setup_timeout_func(server_t *serv, void (*func)(server_t *serv,\
+    void *context));
 
+/*
+    setup context as context
+    */
+void setup_context(server_t *serv, void *context);
 
 /*
    start the server logic as itself and loop into select
@@ -166,13 +176,13 @@ void clear_client(server_t *serv);
 /*
    default send a buffer of data to a client
    */
-void default_send(server_t *serv, size_t id_rcv, void *data);
+void default_send(server_t *serv, size_t id_rcv, void *data, size_t size);
 
 /*
    default receive data buffer from a client
    */
 int default_receive(server_t *serv, size_t id_snd, const void *buff,\
-    size_t size);
+    size_t size, void *context);
 
 /*
    kick a user from the server
@@ -192,7 +202,7 @@ void default_client_disconnected(server_t *serv, size_t id);
 /*
    default timeout function
    */
-void default_timeout(server_t *serv);
+void default_timeout(server_t *serv, void *context);
 
 /*
    stop the server clear connection and lead the server to able to destroy state
