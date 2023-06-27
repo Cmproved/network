@@ -14,6 +14,8 @@ int main(int ac, char **av)
     int ret = 0;
     if (!serv)
         return (2);
+    // You need to create a function that setup all callback function
+    serv->client_connected = &your_when_i_connect_function;
     if (serv->setup(serv))
         return (3);
     ret = serv->start(serv);
@@ -58,19 +60,25 @@ Here are the methods of the object :
 | `kick` | `void` | `server_t *serv, int kick` | kick the `id` client from the server |
 | `client_connected` | `void` | `server_t *serv, size_t id` | action to do when a client `id` is connected |
 | `client_disconnected` | `void` | `server_t *serv, size_t id` | action to do when a client `id` is disconnected |
-| `setup_send` | `void` | `server_t *serv, void(*)(server_t *serv, size_t id, void *data)` | set the callback function for `send` (by default it's `default_send`)|
-| `setup_receive` | `void` | `server_t *serv, int (*)(server_t *serv, int id, const void *buff, size_t size)` | set the callback function for `receive` (by default it's `default_receive`)|
-| `setup_receive_client` | `void` | `server_t *serv, int (*)(server_t *serv, int id, const void *buff, size_t size), size_t id` | set the callback function for `receive` for a define client (by default it's `default_receive`) |
+| `setup_send` | `void` | `server_t *serv, void(*)(server_t *serv, size_t id, void *data, size_t data_size)` | set the callback function for `send` (by default it's `default_send`)|
+| `setup_receive` | `void` | `server_t *serv, int (*)(server_t *serv, int id, const void *buff, size_t size, void *context)` | set the callback function for `receive` (by default it's `default_receive`)|
+| `setup_receive_client` | `void` | `server_t *serv, int (*)(server_t *serv, int id, const void *buff, size_t size, void *context), size_t id` | set the callback function for `receive` for a define client (by default it's `default_receive`) |
 | `setup_client_connected` | `void` | `server_t *serv, void(*)(server_t *serv, int id)` | set the callback function for `client_connected` (by default it's `default_client_connected`)|
 | `setup_client_disconnected` | `void` | `server_t *serv, void(*)(server_t *serv, int id)` | set the callback function for `client_disconnected` (by default it's `default_client_disconnected`)|
-| `send` | `void` | `server_t *serv, size_t id, void *data` | send `size of `data` to the `id` client`|
-| `receive` | `int` | `server_t *serv, size_t id, const void *buff, size_t size` | receive `data` from the `id` client`|
+| `send` | `void` | `server_t *serv, size_t id, void *data, size_t data_size` | send `size of `data` to the `id` client`|
+| `receive` | `int` | `server_t *serv, size_t id, const void *buff, size_t size, void *context` | receive `data` from the `id` client`|
+
+The arguments `void *context` is for all applications you'll need other then the built in network features.
+The network layer act as a while true loop that manage all kind of input as CTRL-C and it's leave to the developper to develop a strong callback architechture that can handle most of imaginable case.
+
+e.g:
+- the received callback don't handle data other then a give away to your application.
 
 ### ToDo:
-[ ] - Add timeout to select
-[ ] - Manage default send 
-[ ] - Manage default receive
-[ ] - Add more unit tests
+- [x] Add timeout to select
+- [ ] Manage default send 
+- [ ] Manage default receive
+- [ ] Add more unit tests
 
 
 ### External fonctions
